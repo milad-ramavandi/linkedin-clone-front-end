@@ -5,7 +5,7 @@ import React from "react";
 
 const UserInformation = async () => {
   const user = await currentUser();
-  const res = await fetch(`${process.env.URL}/posts`);
+  const res = await fetch(`${process.env.VERCEL_URL}/posts`);
   const posts:Post[] = await res.json()
   const userPosts = posts?.filter((item) => item.user.userId === user?.id);
   const userComments = posts

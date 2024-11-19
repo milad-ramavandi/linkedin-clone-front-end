@@ -3,7 +3,7 @@ import PostFeed from '../post-feed'
 import { Post } from '@/types/post'
 
 const PostsFeed = async() => {
-  const res = await fetch(`${process.env.URL}/posts`)
+  const res = await fetch(`${process.env.VERCEL_URL}/posts`)
   const posts:Post[] = await res.json()
   return (
     <div className="space-y-2 pb-20">

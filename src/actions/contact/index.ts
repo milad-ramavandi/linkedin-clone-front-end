@@ -13,7 +13,7 @@ export const handleFollowOrUnfollowAction = async (
     const newFollowers = !followed
       ? [...followers, user?.id]
       : followers.filter((item) => item !== user?.id);
-    return await fetch(`http://127.0.0.1:8000/contacts/${contact.id}`, {
+    return await fetch(`${process.env.URL}/contacts/${contact.id}`, {
       method: "PUT",
       body: JSON.stringify({ ...contact, followers: newFollowers }),
       headers: {

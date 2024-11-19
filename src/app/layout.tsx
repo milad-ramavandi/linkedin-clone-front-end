@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Linkedin",
 };
 
+
 export default async function RootLayout({
   children,
 }: Readonly<{

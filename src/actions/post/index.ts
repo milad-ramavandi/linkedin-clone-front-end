@@ -20,7 +20,7 @@ export const addPostAction = async (text: string, file: any) => {
       postImage: file && file,
       createdAt: new Date(),
     };
-    await fetch("http://localhost:8000/posts", {
+    return await fetch("http://localhost:8000/posts", {
       method: "POST",
       body: JSON.stringify(body),
       headers: {
@@ -34,7 +34,7 @@ export const addPostAction = async (text: string, file: any) => {
 
 export const deletePostAction = async (id: string) => {
   try {
-    await fetch(`http://localhost:8000/posts/${id}`, {
+    return await fetch(`http://localhost:8000/posts/${id}`, {
       method: "DELETE",
     });
   } catch (error) {
@@ -44,7 +44,7 @@ export const deletePostAction = async (id: string) => {
 
 export const editPostAction = async (post: Post, text: string, file: any) => {
   try {
-    await fetch(`http://localhost:8000/posts/${post.id}`, {
+    return await fetch(`http://localhost:8000/posts/${post.id}`, {
       method: "PUT",
       body: JSON.stringify({ ...post, text, postImage: file, isEdited: true }),
       headers: {
@@ -63,7 +63,7 @@ export const likeOrUnlikePostAction = async (post: Post, isLiked: boolean) => {
     const newLikes = !isLiked
       ? [...likes, user?.id]
       : likes.filter((item) => item !== user?.id);
-    await fetch(`http://localhost:8000/posts/${post.id}`, {
+    return await fetch(`http://localhost:8000/posts/${post.id}`, {
       method: "PUT",
       body: JSON.stringify({
         ...post,
@@ -83,7 +83,7 @@ export const rePostAction = async (post: Post, isRepost:boolean) => {
     const user = await currentUser();
     const reposts = post.reposts === undefined ? [] : post.reposts
     const newReposts = !isRepost ? [...reposts, user?.imageUrl] : reposts.filter(item => item !== user?.imageUrl)
-    await fetch(`http://localhost:8000/posts/${post.id}`, {
+    return await fetch(`http://localhost:8000/posts/${post.id}`, {
       method:"PUT",
       body: JSON.stringify({
           ...post,

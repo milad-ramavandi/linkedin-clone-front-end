@@ -13,15 +13,14 @@ export const handleFollowOrUnfollowAction = async (
     const newFollowers = !followed
       ? [...followers, user?.id]
       : followers.filter((item) => item !== user?.id);
-    await fetch(`http://localhost:8000/contacts/${contact.id}`, {
+    return await fetch(`http://localhost:8000/contacts/${contact.id}`, {
       method: "PUT",
       body: JSON.stringify({ ...contact, followers: newFollowers }),
       headers: {
         "Content-Type": "application/json",
       },
     });
-    
   } catch (error) {
-    console.log(`Server error: ${error}`)
+    console.log(`Server error: ${error}`);
   }
 };

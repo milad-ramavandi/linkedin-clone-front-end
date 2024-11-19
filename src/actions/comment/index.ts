@@ -18,7 +18,7 @@ export const addCommentAction = async (post: Post, textComment: string) => {
       text: textComment,
       createdAt: new Date(),
     };
-    await fetch(`http://localhost:8000/posts/${post.id}`, {
+    return await fetch(`http://localhost:8000/posts/${post.id}`, {
       method: "PUT",
       body: JSON.stringify({
         ...post,
@@ -32,6 +32,6 @@ export const addCommentAction = async (post: Post, textComment: string) => {
       },
     });
   } catch (error) {
-    console.log(`Server error: ${error}`)
+    console.log(`Server error: ${error}`);
   }
 };

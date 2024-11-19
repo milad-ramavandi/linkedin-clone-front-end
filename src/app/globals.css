@@ -2,20 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+
+@layer components {
+    .icon {
+        @apply flex flex-col items-center justify-center text-sm font-light
+    }
+    .icon svg {
+        @apply fill-white stroke-gray-300
+    }
+    .icon p {
+        @apply hidden sm:block sm:text-gray-400 sm:text-xs 
+    }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-}

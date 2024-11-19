@@ -5,7 +5,7 @@ import React from "react";
 
 const UserInformation = async () => {
   const user = await currentUser();
-  const res = await fetch('http://localhost:8000/posts');
+  const res = await fetch('http://127.0.0.1:8000/posts');
   const posts:Post[] = await res.json()
   const userPosts = posts?.filter((item) => item.user.userId === user?.id);
   const userComments = posts

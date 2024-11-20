@@ -7,7 +7,7 @@ import { useUser } from "@clerk/nextjs";
 import { Avatar } from "@nextui-org/react";
 import React from "react";
 
-const UserInformation = async () => {
+const UserInformation = () => {
   const user = useUser()
   const {data} = useGetPosts()
   const userPosts:Post[] = data?.filter((item:Post) => item.user.userId === user.user?.id);

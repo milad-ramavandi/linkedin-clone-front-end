@@ -22,26 +22,41 @@ import React, {
 import EditIcon from "../edit-icon";
 import DeleteIcon from "../delete-icon";
 import { deletePostAction, editPostAction } from "@/actions/post";
-import { useRouter } from "next/navigation";
 import { Post } from "@/types/post";
 import PreviewImage from "../preview-image";
 import { toast } from "react-toastify";
+import { useMutation, useQueryClient } from "react-query";
 
 const EllipsisVertical = (props: Post) => {
   const [text, setText] = useState<string>("");
   const [file, setFile] = useState<any>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
-
-  const router = useRouter();
-
-  const handleDeletePost: MouseEventHandler = async () => {
-    toast.promise(deletePostAction(props.id), {
+  
+  const queryClient = useQueryClient();
+  const {mutate:deleteMutate} = useMutation({
+    mutationKey:'delete-post',
+    mutationFn: () => toast.promise(deletePostAction(props.id), {
       pending:'Delete post pending',
       success:'Delete post successfully',
       error:'Failed to delete post'
-    })
-    router.refresh();
+    }),
+    onSuccess:() => queryClient.invalidateQueries('get-posts')
+  })
+
+  const {mutate:editMutate} = useMutation({
+    mutationKey:'edit-post',
+    mutationFn: () => toast.promise(editPostAction(props, text, file), {
+      pending:'Edit post pending',
+      success:'Edit post successfully',
+      error:'Failed to edit post'
+    }),
+    onSuccess:() => queryClient.invalidateQueries('get-posts')
+  })
+
+
+  const handleDeletePost: MouseEventHandler = () => {
+    deleteMutate()
   };
   const handleOpenModalClick: MouseEventHandler = () => onOpen();
   const handleOpenFileClick: MouseEventHandler = () => fileRef.current?.click();
@@ -58,15 +73,10 @@ const EllipsisVertical = (props: Post) => {
     };
   };
   const handleEditPostClick: MouseEventHandler = async () => {
-    toast.promise(editPostAction(props, text, file), {
-      pending:'Edit post pending',
-      success:'Edit post successfully',
-      error:'Failed to edit post'
-    })
+    editMutate()
     onClose();
     setText("");
     setFile(null);
-    router.refresh();
   };
   const handleCloseModalCLick: MouseEventHandler = () => {
     setText("");

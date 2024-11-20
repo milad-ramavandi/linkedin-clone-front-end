@@ -7,30 +7,35 @@ import React, { MouseEventHandler, useEffect, useState } from "react";
 import CheckIcon from "../check-icon";
 import PlusIcon from "../plus-icon";
 import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+import { useMutation, useQueryClient } from "react-query";
 
 const Contact = ({ contact }: { contact: IContact }) => {
-  const router = useRouter();
   const [followed, setFollowed] = useState<boolean>(false);
   const [followers] = useState<string[]>(
     contact.followers === undefined ? [] : contact.followers
   );
   const user = useUser();
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationKey: `${followed ? "Unfollowing" : "Following"}-contact`,
+    mutationFn: () =>
+      toast.promise(handleFollowOrUnfollowAction(contact, followed), {
+        pending: `${followed ? "Unfollowing" : "Following"} is pending`,
+        success: `${followed ? "Unfollowing" : "Following"} is successfully`,
+        error: `Failed to ${followed ? "Unfollowing" : "Following"}`,
+      }),
+    onSuccess: () => queryClient.invalidateQueries("contacts")
+  });
+
   useEffect(() => {
     if (followers.includes(user.user?.id as string)) {
       setFollowed(true);
     }
   }, [user]);
 
-  const handleFollowOrUnfollowClick: MouseEventHandler = async () => {
-    toast.promise(handleFollowOrUnfollowAction(contact, followed), {
-        pending:`${followed? 'Unfollowing': 'Following'} is pending`,
-        success:`${followed?'Unfollowing': 'Following'} is successfully`,
-        error:`Failed to ${followed? 'Unfollowing': 'Following'}`
-    })
-    
+  const handleFollowOrUnfollowClick: MouseEventHandler = () => {
+    mutate();
     setFollowed((prev) => !prev);
-    router.refresh()
   };
   return (
     <div className="flex space-x-2">

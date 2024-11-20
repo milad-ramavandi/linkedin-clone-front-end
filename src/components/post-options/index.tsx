@@ -9,16 +9,15 @@ import {
   likeOrUnlikePostAction,
   rePostAction,
 } from "@/actions/post";
-import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import CommentIcon from "../comment-icon";
 import CommentForm from "../comment-form";
 import CommentsFeed from "../comments-feed";
 import { toast } from "react-toastify";
 import ShareOptions from "../share-options";
+import { useMutation, useQueryClient } from "react-query";
 
 const PostOptions = ({ post }: { post: Post }) => {
-  const router = useRouter();
   const [isCommentOpen, setIsCommentOpen] = useState<boolean>(false);
   const [isShareOpen, setIsShareOpen] = useState<boolean>(false);
   const [isLiked, setIsLiked] = useState<boolean>(false);
@@ -27,15 +26,32 @@ const PostOptions = ({ post }: { post: Post }) => {
   const [reposts] = useState<string[]>(post.reposts === undefined ? [] : post.reposts);
   const user = useUser();
 
-
-  const handleLikeOrUnlikePostClick: MouseEventHandler = () => {
-    toast.promise(likeOrUnlikePostAction(post, isLiked), {
+  
+  const queryClient = useQueryClient()
+  const {mutate:likeOrUnlikeMutate} = useMutation({
+    mutationKey:`${isLiked ? 'Unlike' : 'like'}-post`,
+    mutationFn: () => toast.promise(likeOrUnlikePostAction(post, isLiked), {
       pending: `${isLiked ? "unlike" : "like"} is pending`,
       success: `${isLiked ? "unlike" : "like"} post successfully`,
       error: `Faild to ${isLiked ? "unlike" : "like"} post`,
-    });
+    }),
+    onSuccess:() => queryClient.invalidateQueries('get-posts')
+  })
+
+  const {mutate:repostMutate} = useMutation({
+    mutationKey:`${isRepost ? 'UnRepost' : 'Repost'}-post`,
+    mutationFn: () => toast.promise(rePostAction(post, isRepost), {
+      pending: `${isRepost ? 'UnReposting' : 'Reposting'} is pending`,
+      success: `${isRepost ? 'UnReposting' : 'Reposting'} is successfully`,
+      error: `Failed to ${isRepost ? 'UnReposting' : 'Reposting'}`,
+    }),
+    onSuccess:() => queryClient.invalidateQueries('get-posts')
+  })
+
+
+  const handleLikeOrUnlikePostClick: MouseEventHandler = () => {
+    likeOrUnlikeMutate()
     setIsLiked((prev) => !prev);
-    router.refresh()
   };
   const handleBoxCommentClick: MouseEventHandler = () =>
     setIsCommentOpen((prev) => !prev);
@@ -44,13 +60,8 @@ const PostOptions = ({ post }: { post: Post }) => {
     setIsShareOpen((prev) => !prev);
 
   const handleRepostClick: MouseEventHandler = () => {
-    toast.promise(rePostAction(post, isRepost), {
-      pending: `${isRepost ? 'UnReposting' : 'Reposting'} is pending`,
-      success: `${isRepost ? 'UnReposting' : 'Reposting'} is successfully`,
-      error: `Failed to ${isRepost ? 'UnReposting' : 'Reposting'}`,
-    });
+    repostMutate()
     setIsRepost(prev => !prev)
-    router.refresh()
   };
 
   useEffect(() => {
@@ -60,7 +71,7 @@ const PostOptions = ({ post }: { post: Post }) => {
 
   }, [post, user]);
   useEffect(() => {
-    if (reposts.includes(user.user?.imageUrl as string)) {
+    if (reposts?.includes(user.user?.imageUrl as string)) {
       setIsRepost(true)
     }
   }, [post, user]);

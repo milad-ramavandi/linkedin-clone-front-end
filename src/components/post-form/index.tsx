@@ -8,12 +8,12 @@ import React, {
   useState,
 } from "react";
 import { addPostAction } from "@/actions/post";
-import { useRouter } from "next/navigation";
 import PreviewImage from "../preview-image";
 import { toast } from "react-toastify";
 import FaceIcon from "../face-smile";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { MouseDownEvent } from "emoji-picker-react/dist/config/config";
+import { useMutation, useQueryClient } from "react-query";
 
 
 const PostForm = () => {
@@ -21,8 +21,18 @@ const PostForm = () => {
   const fileRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<any>(null);
   const [text, setText] = useState<string>("");
-  const [isOpenEmoji, setIsOpenEmoji] = useState<boolean>(false)
-  const router = useRouter();
+  const [isOpenEmoji, setIsOpenEmoji] = useState<boolean>(false);
+  const queryClient = useQueryClient();
+
+  const {mutate} = useMutation({
+    mutationKey:'add-post',
+    mutationFn: () => toast.promise(addPostAction(text, file), {
+      pending:'Add post pending',
+      success:'Add post successfully',
+      error:'Failed to add post'
+    }),
+    onSuccess:() => queryClient.invalidateQueries('get-posts')
+  })
 
   const handleImageChange: ChangeEventHandler = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -49,15 +59,11 @@ const PostForm = () => {
       toast.error('Post input is required')
       return
     }
+    mutate()
     setFile(null);
     setText("");
     setIsOpenEmoji(false)
-    toast.promise(addPostAction(text, file), {
-      pending:'Add post pending',
-      success:'Add post successfully',
-      error:'Failed to add post'
-    })
-    router.refresh();
+    
   };
   const handleOpenEmojiClick:MouseEventHandler = () => setIsOpenEmoji(prev =>!prev)
   const handleEmojiClick:MouseDownEvent = (emoji:EmojiClickData) => {

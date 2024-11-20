@@ -1,9 +1,15 @@
 "use client";
 import { SignInButton } from "@clerk/nextjs";
+import { Button, Skeleton } from "@nextui-org/react";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const Login = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  useEffect(() => {
+    setTimeout(() => setIsLoading(false), 1000)
+  });
+
   return (
     <div
       className={
@@ -18,9 +24,19 @@ const Login = () => {
         height={250}
         alt="logo-login"
       />
-      <div className="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">
-        <SignInButton />
-      </div>
+
+      {isLoading ? (
+        <Skeleton className={'rounded-full animate-pulse'}>
+          <Button size={"lg"}>
+          </Button>
+        </Skeleton>
+      ) : (
+        <SignInButton>
+          <Button variant={"ghost"} radius={"full"} size={"lg"}>
+            Sign in
+          </Button>
+        </SignInButton>
+      )}
     </div>
   );
 };

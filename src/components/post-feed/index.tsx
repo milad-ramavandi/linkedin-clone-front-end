@@ -13,13 +13,24 @@ const PostFeed = (props: Post) => {
   return (
     <div className="bg-white rounded-md border p-4 space-y-3">
       {props.reposts && props.reposts.length > 0 && (
-        <div className="flex items-center space-x-1">
-          {props.reposts.map((item) => (
-            <AvatarGroup key={item} size={"sm"}>
-              <Avatar src={item} showFallback />
-            </AvatarGroup>
-          ))}
-          <p className="text-gray-400 text-xs">reposted this</p>
+        <div
+          className={`flex items-center ${
+            user.user?.id === props.user.userId
+              ? "justify-between"
+              : "justify-end"
+          }`}
+        >
+          <div className="flex items-center space-x-1">
+            {props.reposts.map((item) => (
+              <AvatarGroup key={item} size={"sm"}>
+                <Avatar src={item} showFallback />
+              </AvatarGroup>
+            ))}
+            <p className="text-gray-400 text-xs">reposted this</p>
+          </div>
+          {user.user?.id === props.user.userId && (
+            <EllipsisVertical {...props} />
+          )}
         </div>
       )}
       {props.isEdited && (
@@ -41,7 +52,11 @@ const PostFeed = (props: Post) => {
             <TimeAgo date={props.createdAt} suppressHydrationWarning />
           </div>
         </div>
-        {user.user?.id === props.user.userId && <EllipsisVertical {...props} />}
+        {props.reposts && props.reposts.length > 0
+          ? null
+          : user.user?.id === props.user.userId && (
+              <EllipsisVertical {...props} />
+            )}
       </div>
       <p>{props.text}</p>
       {props.postImage && (

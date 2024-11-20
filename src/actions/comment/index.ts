@@ -18,7 +18,7 @@ export const addCommentAction = async (post: Post, textComment: string) => {
       text: textComment,
       createdAt: new Date(),
     };
-    await fetch(`${process.env.VERCEL_URL}/posts/${post.id}`, {
+    await fetch(`${process.env.NEXT_URL}/posts/${post.id}`, {
       method: "PUT",
       body: JSON.stringify({
         ...post,

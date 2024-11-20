@@ -13,7 +13,7 @@ export const handleFollowOrUnfollowAction = async (
     const newFollowers = !followed
       ? [...followers, user?.id]
       : followers.filter((item) => item !== user?.id);
-    return await fetch(`${process.env.VERCEL_URL}/contacts/${contact.id}`, {
+    return await fetch(`${process.env.NEXT_URL}contacts/${contact.id}`, {
       method: "PUT",
       body: JSON.stringify({ ...contact, followers: newFollowers }),
       headers: {

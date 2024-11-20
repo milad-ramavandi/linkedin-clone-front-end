@@ -5,7 +5,7 @@ import { IContact } from "@/types/contact";
 
 
 const SidebarRight = async () => {
-  const res= await fetch("http://localhost:8000/contacts")
+  const res= await fetch(`${process.env.NEXT_URL}contacts`)
   const contacts:IContact[] = await res.json()
 
 

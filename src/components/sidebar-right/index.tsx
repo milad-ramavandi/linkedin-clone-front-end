@@ -1,14 +1,16 @@
+'use client'
 import React from "react";
 import InformationIcon from "../information-icon";
 import Contact from "../contact";
 import { IContact } from "@/types/contact";
+import { useQuery } from "react-query";
 
 
-const SidebarRight = async () => {
-  const res= await fetch(`${process.env.NEXT_URL}contacts`)
-  const contacts:IContact[] = await res.json()
-
-
+const SidebarRight = () => {
+  const {data} = useQuery({
+    queryKey:'contacts',
+    queryFn: async () => await fetch(`${process.env.NEXT_URL}contacts`).then(res => res.json())
+  })
   return (
     <div className="p-3 bg-white rounded-lg space-y-4">
       <div className="flex justify-between items-center">
@@ -16,7 +18,7 @@ const SidebarRight = async () => {
         <InformationIcon />
       </div>
       <div className="space-y-3">
-        {contacts.map(item => <Contact key={item.id} contact={item}/>)}
+        {data?.map((item:IContact) => <Contact key={item.id} contact={item}/>)}
       </div>
     </div>
   );

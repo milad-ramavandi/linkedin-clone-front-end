@@ -1,18 +1,21 @@
+'use client'
+
+import useGetPosts from "@/hooks/posts";
+import { Comment } from "@/types/comment";
 import { Post } from "@/types/post";
-import { currentUser } from "@clerk/nextjs/server";
+import { useUser } from "@clerk/nextjs";
 import { Avatar } from "@nextui-org/react";
 import React from "react";
 
 const UserInformation = async () => {
-  const user = await currentUser();
-  const res = await fetch(`${process.env.NEXT_URL}posts`);
-  const posts:Post[] = await res.json()
-  const userPosts = posts?.filter((item) => item.user.userId === user?.id);
-  const userComments = posts
-    ?.flatMap((item) =>
-      item.comments?.filter((item) => item.user.userId === user?.id)
+  const user = useUser()
+  const {data} = useGetPosts()
+  const userPosts:Post[] = data?.filter((item:Post) => item.user.userId === user.user?.id);
+  const userComments:Comment[] = data
+    ?.flatMap((item:Post) =>
+      item.comments?.filter((item) => item.user.userId === user.user?.id)
     )
-    .filter((item) => item !== undefined);
+    .filter((item:Comment) => item !== undefined);
 
   return (
     <div
@@ -20,9 +23,9 @@ const UserInformation = async () => {
         "flex flex-col justify-center items-center bg-white rounded-lg border py-4"
       }
     >
-      <Avatar src={user?.imageUrl} showFallback size={"lg"} />
+      <Avatar src={user.user?.imageUrl} showFallback size={"lg"} />
 
-      <p className={"font-semibold"}>{user?.fullName}</p>
+      <p className={"font-semibold"}>{user?.user?.fullName}</p>
 
       <hr className={"w-full text-gray-200 my-5"} />
       <div className={"w-full flex justify-between text-xs px-4"}>

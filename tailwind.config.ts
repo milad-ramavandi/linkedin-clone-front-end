@@ -18,12 +18,12 @@ export default {
         },
         move:{
           "0%":{left:"0%"},
-          "100%":{left:"100%"}
+          "100%":{left:"90%"}
         }
       },
       animation: {
         'increaseWidth': 'increaseWidth 1s linear',
-        "move":"move 1s linear infinite"
+        "move":"move 1s linear infinite alternate"
       },
     },
   },

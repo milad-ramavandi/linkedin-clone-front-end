@@ -5,10 +5,6 @@ import React, { MouseEventHandler, useEffect, useState } from "react";
 import LikeIcon from "../like-icon";
 import ArrowPath from "../arrow-path";
 import ShareIcon from "../share-icon";
-import {
-  likeOrUnlikePostAction,
-  rePostAction,
-} from "@/actions/post";
 import { useUser } from "@clerk/nextjs";
 import CommentIcon from "../comment-icon";
 import CommentForm from "../comment-form";
@@ -22,35 +18,73 @@ const PostOptions = ({ post }: { post: Post }) => {
   const [isShareOpen, setIsShareOpen] = useState<boolean>(false);
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [isRepost, setIsRepost] = useState<boolean>(false);
-  const [likes] = useState<string[]>(post.likes === undefined ? [] : post.likes);
-  const [reposts] = useState<string[]>(post.reposts === undefined ? [] : post.reposts);
+  const [likes] = useState<string[]>(
+    post.likes === undefined ? [] : post.likes
+  );
+  const [reposts] = useState<string[]>(
+    post.reposts === undefined ? [] : post.reposts
+  );
   const user = useUser();
 
-  
-  const queryClient = useQueryClient()
-  const {mutate:likeOrUnlikeMutate} = useMutation({
-    mutationKey:`${isLiked ? 'Unlike' : 'like'}-post`,
-    mutationFn: () => toast.promise(likeOrUnlikePostAction(post, isLiked), {
-      pending: `${isLiked ? "unlike" : "like"} is pending`,
-      success: `${isLiked ? "unlike" : "like"} post successfully`,
-      error: `Faild to ${isLiked ? "unlike" : "like"} post`,
-    }),
-    onSuccess:() => queryClient.invalidateQueries('get-posts')
-  })
+  const queryClient = useQueryClient();
+  const { mutate: likeOrUnlikeMutate } = useMutation({
+    mutationKey: [`${isLiked ? "Unlike" : "like"}-post`],
+    mutationFn: () => {
+      const promise = async () => {
+        const likes = post.likes === undefined ? [] : post.likes;
+        const newLikes = !isLiked
+          ? [...likes, user.user?.id]
+          : likes.filter((item) => item !== user.user?.id);
+        await fetch(`http://localhost:8000/posts/${post.id}`, {
+          method: "PUT",
+          body: JSON.stringify({
+            ...post,
+            likes: newLikes,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      };
+      return toast.promise(promise, {
+        pending: `${isLiked ? "unlike" : "like"} is pending...`,
+        success: `${isLiked ? "unlike" : "like"} post successfully`,
+        error: `Faild to ${isLiked ? "unlike" : "like"} post`,
+      });
+    },
+    onSuccess: () => queryClient.invalidateQueries("posts"),
+  });
 
-  const {mutate:repostMutate} = useMutation({
-    mutationKey:`${isRepost ? 'UnRepost' : 'Repost'}-post`,
-    mutationFn: () => toast.promise(rePostAction(post, isRepost), {
-      pending: `${isRepost ? 'UnReposting' : 'Reposting'} is pending`,
-      success: `${isRepost ? 'UnReposting' : 'Reposting'} is successfully`,
-      error: `Failed to ${isRepost ? 'UnReposting' : 'Reposting'}`,
-    }),
-    onSuccess:() => queryClient.invalidateQueries('get-posts')
-  })
-
+  const { mutate: repostMutate } = useMutation({
+    mutationKey: [`${isRepost ? "UnRepost" : "Repost"}-post`],
+    mutationFn: () => {
+      const promise = async () => {
+        const reposts = post.reposts === undefined ? [] : post.reposts;
+        const newReposts = !isRepost
+          ? [...reposts, user.user?.imageUrl]
+          : reposts.filter((item) => item !== user.user?.imageUrl);
+        await fetch(`http://localhost:8000/posts/${post.id}`, {
+          method: "PUT",
+          body: JSON.stringify({
+            ...post,
+            reposts: newReposts,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      };
+      return toast.promise(promise, {
+        pending: `${isRepost ? "UnReposting" : "Reposting"} is pending...`,
+        success: `${isRepost ? "UnReposting" : "Reposting"} is successfully`,
+        error: `Failed to ${isRepost ? "UnReposting" : "Reposting"}`,
+      });
+    },
+    onSuccess: () => queryClient.invalidateQueries("posts"),
+  });
 
   const handleLikeOrUnlikePostClick: MouseEventHandler = () => {
-    likeOrUnlikeMutate()
+    likeOrUnlikeMutate();
     setIsLiked((prev) => !prev);
   };
   const handleBoxCommentClick: MouseEventHandler = () =>
@@ -60,19 +94,18 @@ const PostOptions = ({ post }: { post: Post }) => {
     setIsShareOpen((prev) => !prev);
 
   const handleRepostClick: MouseEventHandler = () => {
-    repostMutate()
-    setIsRepost(prev => !prev)
+    repostMutate();
+    setIsRepost((prev) => !prev);
   };
 
   useEffect(() => {
     if (likes?.includes(user.user?.id as string)) {
       setIsLiked(true);
     }
-
   }, [post, user]);
   useEffect(() => {
     if (reposts?.includes(user.user?.imageUrl as string)) {
-      setIsRepost(true)
+      setIsRepost(true);
     }
   }, [post, user]);
 
@@ -118,7 +151,7 @@ const PostOptions = ({ post }: { post: Post }) => {
 
         <Button
           type="button"
-          startContent={<ArrowPath/>}
+          startContent={<ArrowPath />}
           variant={"ghost"}
           onClick={handleRepostClick}
         >

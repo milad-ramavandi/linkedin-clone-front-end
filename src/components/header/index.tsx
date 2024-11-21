@@ -57,7 +57,7 @@ const Header = () => {
           <div className={"flex items-center sm:flex-grow space-x-2"}>
             <div className={"relative w-10 h-10"}>
               <Image
-                src={"https://links.papareact.com/b3z"}
+                src={"/assets/images/logo-header.png"}
                 fill
                 alt="logo"
                 className={"object-cover rounded-lg"}

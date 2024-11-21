@@ -10,7 +10,7 @@ const LoadingPage = () => {
     >
       <Image
         src={
-          "https://logos-world.net/wp-content/uploads/2020/05/Linkedin-Logo-700x394.png"
+          '/assets/images/login-logo.png'
         }
         width={250}
         height={250}

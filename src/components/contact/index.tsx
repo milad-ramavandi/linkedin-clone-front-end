@@ -1,5 +1,4 @@
 "use client";
-import { handleFollowOrUnfollowAction } from "@/actions/contact";
 import { IContact } from "@/types/contact";
 import { useUser } from "@clerk/nextjs";
 import { Avatar, Button } from "@nextui-org/react";
@@ -16,14 +15,30 @@ const Contact = ({ contact }: { contact: IContact }) => {
   );
   const user = useUser();
   const queryClient = useQueryClient();
+
   const { mutate } = useMutation({
-    mutationKey: `${followed ? "Unfollowing" : "Following"}-contact`,
-    mutationFn: () =>
-      toast.promise(handleFollowOrUnfollowAction(contact, followed), {
-        pending: `${followed ? "Unfollowing" : "Following"} is pending`,
+    mutationKey: [`${followed ? "Unfollowing" : "Following"}-contact`],
+    mutationFn: () => {
+      const promise = async () => {
+        const followers =
+          contact.followers === undefined ? [] : contact.followers;
+        const newFollowers = !followed
+          ? [...followers, user.user?.id]
+          : followers.filter((item) => item !== user.user?.id);
+        await fetch(`http://localhost:8000/contacts/${contact.id}`, {
+          method: "PUT",
+          body: JSON.stringify({ ...contact, followers: newFollowers }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      };
+      return toast.promise(promise, {
+        pending: `${followed ? "Unfollowing" : "Following"} is pending...`,
         success: `${followed ? "Unfollowing" : "Following"} is successfully`,
         error: `Failed to ${followed ? "Unfollowing" : "Following"}`,
-      }),
+      });
+    },
     onSuccess: () => queryClient.invalidateQueries("contacts")
   });
 

@@ -7,14 +7,15 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { addPostAction } from "@/actions/post";
 import PreviewImage from "../preview-image";
 import { toast } from "react-toastify";
 import FaceIcon from "../face-smile";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { MouseDownEvent } from "emoji-picker-react/dist/config/config";
 import { useMutation, useQueryClient } from "react-query";
-
+import { User } from "@/types/user";
+import { Post } from "@/types/post";
+import { v4 as uuidv4 } from "uuid";
 
 const PostForm = () => {
   const { user } = useUser();
@@ -24,15 +25,39 @@ const PostForm = () => {
   const [isOpenEmoji, setIsOpenEmoji] = useState<boolean>(false);
   const queryClient = useQueryClient();
 
-  const {mutate} = useMutation({
-    mutationKey:'add-post',
-    mutationFn: () => toast.promise(addPostAction(text, file), {
-      pending:'Add post pending',
-      success:'Add post successfully',
-      error:'Failed to add post'
-    }),
-    onSuccess:() => queryClient.invalidateQueries('get-posts')
-  })
+  const { mutate } = useMutation({
+    mutationKey: ["add-post"],
+    mutationFn: () => {
+      const promise = async () => {
+        const userDB: User = {
+          userId: user?.id as string,
+          userImage: user?.imageUrl as string,
+          fullName: user?.fullName as string,
+        };
+        const body: Post = {
+          id: uuidv4(),
+          user: userDB,
+          text: text,
+          postImage: file && file,
+          createdAt: new Date(),
+        };
+        await fetch(`http://localhost:8000/posts`, {
+          method: "POST",
+          body: JSON.stringify(body),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      };
+
+      return toast.promise(promise, {
+        pending: "Add post pending...",
+        success: "Add post successfully",
+        error: "Failed to add post",
+      });
+    },
+    onSuccess: () => queryClient.invalidateQueries("posts"),
+  });
 
   const handleImageChange: ChangeEventHandler = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -55,20 +80,20 @@ const PostForm = () => {
     e: React.MouseEvent<Element, MouseEvent>
   ) => {
     e.preventDefault();
-    if(!text) {
-      toast.error('Post input is required')
-      return
+    if (!text) {
+      toast.error("Post input is required");
+      return;
     }
-    mutate()
+    mutate();
     setFile(null);
     setText("");
-    setIsOpenEmoji(false)
-    
+    setIsOpenEmoji(false);
   };
-  const handleOpenEmojiClick:MouseEventHandler = () => setIsOpenEmoji(prev =>!prev)
-  const handleEmojiClick:MouseDownEvent = (emoji:EmojiClickData) => {
-    setText(prev => `${prev}${emoji.emoji}`)
-  }
+  const handleOpenEmojiClick: MouseEventHandler = () =>
+    setIsOpenEmoji((prev) => !prev);
+  const handleEmojiClick: MouseDownEvent = (emoji: EmojiClickData) => {
+    setText((prev) => `${prev}${emoji.emoji}`);
+  };
   return (
     <div className="p-3 bg-white rounded-lg space-y-3">
       <form>
@@ -81,7 +106,7 @@ const PostForm = () => {
             onValueChange={setText}
             placeholder="Start writing a post..."
             autoComplete={"off"}
-            endContent={<FaceIcon onClick={handleOpenEmojiClick}/>}
+            endContent={<FaceIcon onClick={handleOpenEmojiClick} />}
           />
           <input
             type="file"
@@ -97,12 +122,14 @@ const PostForm = () => {
           </Button>
         </div>
       </form>
-      <EmojiPicker open={isOpenEmoji} style={{
-        width:"75%",
-        margin:"10px auto",
-        backgroundColor:'#f1f5f9'
-      }}
-      onEmojiClick={handleEmojiClick}
+      <EmojiPicker
+        open={isOpenEmoji}
+        style={{
+          width: "75%",
+          margin: "10px auto",
+          backgroundColor: "#f1f5f9",
+        }}
+        onEmojiClick={handleEmojiClick}
       />
       <PreviewImage
         file={file}

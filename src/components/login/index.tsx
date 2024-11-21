@@ -3,9 +3,14 @@ import { SignInButton } from "@clerk/nextjs";
 import { Button, Skeleton } from "@nextui-org/react";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const {} = useQuery({
+    queryKey:['logo'],
+    queryFn: async () => await fetch('')
+  })
   useEffect(() => {
     setTimeout(() => setIsLoading(false), 1000)
   });
@@ -17,9 +22,7 @@ const Login = () => {
       }
     >
       <Image
-        src={
-          "https://logos-world.net/wp-content/uploads/2020/05/Linkedin-Logo-700x394.png"
-        }
+        src='/assets/images/login-logo.png'
         width={250}
         height={250}
         alt="logo-login"

@@ -5,7 +5,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import Login from "@/components/login";
 
 export const metadata: Metadata = {
-  title: "Linkedin",
+  title: "Linkedin Clone",
 };
 
 

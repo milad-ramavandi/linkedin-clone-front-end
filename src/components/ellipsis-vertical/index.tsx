@@ -21,7 +21,6 @@ import React, {
 } from "react";
 import EditIcon from "../edit-icon";
 import DeleteIcon from "../delete-icon";
-import { deletePostAction, editPostAction } from "@/actions/post";
 import { Post } from "@/types/post";
 import PreviewImage from "../preview-image";
 import { toast } from "react-toastify";
@@ -32,31 +31,53 @@ const EllipsisVertical = (props: Post) => {
   const [file, setFile] = useState<any>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const { isOpen, onOpen, onClose, onOpenChange } = useDisclosure();
-  
+
   const queryClient = useQueryClient();
-  const {mutate:deleteMutate} = useMutation({
-    mutationKey:'delete-post',
-    mutationFn: () => toast.promise(deletePostAction(props.id), {
-      pending:'Delete post pending',
-      success:'Delete post successfully',
-      error:'Failed to delete post'
-    }),
-    onSuccess:() => queryClient.invalidateQueries('get-posts')
-  })
+  const { mutate: deletePostMutate } = useMutation({
+    mutationKey: ["delete-post"],
+    mutationFn: () => {
+      const promise = async () => {
+        await fetch(`http://localhost:8000/posts/${props.id}`, {
+          method: "DELETE",
+        });
+      };
+      return toast.promise(promise, {
+        pending: "Delete post pending...",
+        success: "Delete post successfully",
+        error: "Failed to delete post",
+      });
+    },
+    onSuccess: () => queryClient.invalidateQueries("posts"),
+  });
 
-  const {mutate:editMutate} = useMutation({
-    mutationKey:'edit-post',
-    mutationFn: () => toast.promise(editPostAction(props, text, file), {
-      pending:'Edit post pending',
-      success:'Edit post successfully',
-      error:'Failed to edit post'
-    }),
-    onSuccess:() => queryClient.invalidateQueries('get-posts')
-  })
-
+  const { mutate: editPostMutate } = useMutation({
+    mutationKey: ["edit-post"],
+    mutationFn: () => {
+      const promise = async () => {
+        await fetch(`http://localhost:8000/posts/${props.id}`, {
+          method: "PUT",
+          body: JSON.stringify({
+            ...props,
+            text,
+            postImage: file,
+            isEdited: true,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+      };
+      return toast.promise(promise, {
+        pending: "Edit post pending...",
+        success: "Edit post successfully",
+        error: "Failed to edit post",
+      });
+    },
+    onSuccess: () => queryClient.invalidateQueries("posts"),
+  });
 
   const handleDeletePost: MouseEventHandler = () => {
-    deleteMutate()
+    deletePostMutate();
   };
   const handleOpenModalClick: MouseEventHandler = () => onOpen();
   const handleOpenFileClick: MouseEventHandler = () => fileRef.current?.click();
@@ -73,7 +94,7 @@ const EllipsisVertical = (props: Post) => {
     };
   };
   const handleEditPostClick: MouseEventHandler = async () => {
-    editMutate()
+    editPostMutate()
     onClose();
     setText("");
     setFile(null);

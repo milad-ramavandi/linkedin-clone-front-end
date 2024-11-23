@@ -12,12 +12,12 @@ const UserInformation = () => {
   const session = useSession();
   const { data } = useGetPosts();
   const userPosts: Post[] = data?.filter(
-    (item: Post) => item.user.userId === session.data?.user?.id
+    (item: Post) => item.user.fullName === session.data?.user?.name
   );
   const userComments: Comment[] = data
     ?.flatMap((item: Post) =>
       item.comments?.filter(
-        (item) => item.user.userId === session.data?.user?.id
+        (item) => item.user.fullName === session.data?.user?.name
       )
     )
     .filter((item: Comment) => item !== undefined);

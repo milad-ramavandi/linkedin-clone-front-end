@@ -84,7 +84,10 @@
       "name": "Harrry Potter",
       "src": "https://links.papareact.com/d0c",
       "id": "4bhc",
-      "title": "Actor"
+      "title": "Actor",
+      "followers": [
+        "Walter White"
+      ]
     },
     {
       "name": "The Queen",

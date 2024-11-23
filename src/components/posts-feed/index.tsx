@@ -8,7 +8,7 @@ import { Avatar, AvatarGroup } from "@nextui-org/react";
 const PostsFeed = () => {
   const { data } = useGetPosts();
   return (
-    <div className="space-y-4 pb-20">
+    <div className="space-y-4">
       {data
         ?.slice(0)
         .reverse()

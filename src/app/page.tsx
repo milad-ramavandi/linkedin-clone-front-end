@@ -15,7 +15,7 @@ export default async function Home() {
         <div className={"hidden md:block md:col-span-2"}>
           <UserInformation />
         </div>
-        <div className={"col-span-full md:col-span-6 lg:col-span-4 space-y-4 h-screen overflow-auto scrollbar-hide"}>
+        <div className={"col-span-full md:col-span-6 lg:col-span-4 space-y-4 h-screen overflow-auto scrollbar-hide pb-44"}>
           <PostForm />
           <PostsFeed />
         </div>

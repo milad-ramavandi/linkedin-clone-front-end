@@ -7,10 +7,8 @@ import EllipsisVertical from "../ellipsis-vertical";
 import Image from "next/image";
 import PostOptions from "../post-options";
 import { useSession } from "next-auth/react";
-// import { useUser } from "@clerk/nextjs";
 
 const PostFeed = (props: Post) => {
-  // const user = useUser();
   const session = useSession()
   return (
     <div className="bg-white rounded-md border p-4 space-y-3">

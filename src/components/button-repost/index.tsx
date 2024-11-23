@@ -23,7 +23,7 @@ const ButtonRepost = ({ post }: { post: Post }) => {
         const newReposts = !isRepost
           ? [...reposts, session.data?.user?.image]
           : reposts.filter((item) => item !== session.data?.user?.image);
-        await fetch(`http://localhost:8000/posts/${post.id}`, {
+        await fetch(`${process.env.NEXT_URL}posts/${post.id}`, {
           method: "PUT",
           body: JSON.stringify({
             ...post,

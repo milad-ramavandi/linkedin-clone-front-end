@@ -43,7 +43,7 @@ const PostForm = () => {
           postImage: file && file,
           createdAt: new Date(),
         };
-        await fetch(`http://localhost:8000/posts`, {
+        await fetch(`${process.env.NEXT_URL}posts`, {
           method: "POST",
           body: JSON.stringify(body),
           headers: {

@@ -30,7 +30,7 @@ const CommentForm = ({ post }: { post: Post }) => {
           text: textComment,
           createdAt: new Date(),
         };
-        await fetch(`${process.env.NEXT_URL}posts/${post.id}`, {
+        await fetch(`http://localhost:8000/posts/${post.id}`, {
           method: "PUT",
           body: JSON.stringify({
             ...post,

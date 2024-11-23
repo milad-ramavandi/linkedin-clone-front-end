@@ -10,7 +10,7 @@ const FaceIcon = ({onClick}:{onClick:MouseEventHandler}) => {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className="size-6 cursor-pointer text-gray-500 animate-bounce"
+      className="size-6 cursor-pointer text-gray-500"
       onClick={onClick}
     >
       <path

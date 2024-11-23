@@ -7,7 +7,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default async function Home() {
-  await delay(2000)
+  await delay(4000);
   return (
     <>
       <Header />
@@ -28,7 +28,6 @@ export default async function Home() {
   );
 }
 
-
-const delay = async(ms:number) => {
-  await new Promise((resolve) => setTimeout(resolve, ms))
-}
+const delay = async (ms: number) => {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+};

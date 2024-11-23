@@ -8,14 +8,14 @@ import HomeIcon from "../home-icon";
 import UsersIcon from "../users-icon";
 import BriefcaseIcon from "../briefcase-icon";
 import MessagesIcon from "../messages-icon";
-import { UserButton } from "@clerk/nextjs";
 import OverleyEffect from "../overlay-effect";
 import NotificationIcon from "../notification-icon";
 import { searchItem } from "@/types/search";
 import { LinkType } from "@/types/link/link";
+import UserProfile from "../user-profile";
 
 const links: LinkType[] = [
-  { componentIcon: <HomeIcon />, title: "Home" },
+  { componentIcon: <HomeIcon />, title: "Home", active:true},
   {
     componentIcon: <UsersIcon />,
     title: "Network",
@@ -45,7 +45,7 @@ const Header = () => {
     setHideLinks(true);
   };
   const blurLinksHandler: FocusEventHandler = () => setHideLinks(false);
-
+  
   return (
     <>
       <header
@@ -126,14 +126,12 @@ const Header = () => {
               {links.map((item, index) => (
                 <Link href={""} className={`icon`} key={index}>
                   <>{item.componentIcon}</>
-                  <p title={item.title}>{item.title}</p>
+                  <p title={item.title} className={`${item.active && '!text-blue-400'}`}>{item.title}</p>
                 </Link>
               ))}
-              
-              <UserButton />
-             
             </div>
           )}
+          <UserProfile/>
         </div>
       </header>
       {showOverlay && <OverleyEffect />}

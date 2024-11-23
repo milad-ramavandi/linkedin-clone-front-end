@@ -13,11 +13,10 @@ export default {
       keyframes: {
         increaseWidth: {
           '0%': { width: '0' },
-          
           '100%': { width:'100%' },
         },
         move:{
-          "0%":{left:"0%"},
+          "0%":{left:"-30%"},
           "100%":{left:"90%"}
         }
       },

@@ -1,6 +1,5 @@
 "use client";
 import { Post } from "@/types/post";
-import { useUser } from "@clerk/nextjs";
 import { Avatar, Button, Input } from "@nextui-org/react";
 import React, { MouseEventHandler, useState } from "react";
 import { toast } from "react-toastify";
@@ -10,11 +9,12 @@ import { MouseDownEvent } from "emoji-picker-react/dist/config/config";
 import { useMutation, useQueryClient } from "react-query";
 import { v4 as uuidv4 } from "uuid";
 import { Comment } from "@/types/comment";
+import { useSession } from "next-auth/react";
 
 const CommentForm = ({ post }: { post: Post }) => {
   const [textComment, setTextComment] = useState<string>("");
   const [isOpenEmoji, setIsOpenEmoji] = useState<boolean>(false);
-  const user = useUser();
+  const session = useSession()
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
     mutationKey: ["add-comment"],
@@ -23,9 +23,9 @@ const CommentForm = ({ post }: { post: Post }) => {
         const commentDB: Comment = {
           id: uuidv4(),
           user: {
-            userId: user.user?.id as string,
-            userImage: user.user?.imageUrl as string,
-            fullName: user.user?.fullName as string,
+            userId: uuidv4(),
+            userImage: session.data?.user?.image as string,
+            fullName: session.data?.user?.name as string,
           },
           text: textComment,
           createdAt: new Date(),
@@ -73,7 +73,7 @@ const CommentForm = ({ post }: { post: Post }) => {
   return (
     <>
       <div className="flex space-x-2">
-        <Avatar src={user.user?.imageUrl} showFallback />
+        <Avatar src={session.data?.user?.image as string} showFallback />
         <form className="flex-grow">
           <Input
             value={textComment}

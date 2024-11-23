@@ -1,45 +1,34 @@
 "use client";
-import { SignInButton } from "@clerk/nextjs";
-import { Button, Skeleton } from "@nextui-org/react";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { useQuery } from "react-query";
+import { Button } from "@nextui-org/react";
+import { signIn } from "next-auth/react";
+import ArrowRightIn from "../arrow-right-in";
 
 const Login = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const {} = useQuery({
-    queryKey:['logo'],
-    queryFn: async () => await fetch('')
-  })
-  useEffect(() => {
-    setTimeout(() => setIsLoading(false), 1000)
-  });
+  const clickSignIn = () => signIn();
 
   return (
     <div
       className={
-        "w-full min-h-screen mx-auto p-2 bg-gray-50 flex flex-col justify-center items-center"
+        "max-w-screen-sm min-h-screen mx-auto flex justify-center items-center"
       }
     >
-      <Image
-        src='/assets/images/login-logo.png'
-        width={250}
-        height={250}
-        alt="logo-login"
-      />
+      <div
+        className={
+          "w-1/2 mx-auto bg-gray-100 shadow-lg p-2 rounded-sm flex flex-col text-center space-y-3"
+        }
+      >
+        <p className={"font-bold text-lg"}>Welcome to Linkedin Clone</p>
 
-      {isLoading ? (
-        <Skeleton className={'rounded-full animate-pulse'}>
-          <Button size={"lg"}>
-          </Button>
-        </Skeleton>
-      ) : (
-        <SignInButton>
-          <Button variant={"ghost"} radius={"full"} size={"lg"}>
-            Sign in
-          </Button>
-        </SignInButton>
-      )}
+        <Button
+          radius="full"
+          variant={"ghost"}
+          onClick={clickSignIn}
+          className={'w-3/4 mx-auto'}
+          endContent={<ArrowRightIn />}
+        >
+          Continue
+        </Button>
+      </div>
     </div>
   );
 };

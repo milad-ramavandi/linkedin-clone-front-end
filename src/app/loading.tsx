@@ -16,7 +16,7 @@ const LoadingPage = () => {
         height={250}
         alt="logo"
       />
-      <div className="relative rounded-lg bg-gray-400 w-48 h-[3px] overflow-hidden">
+      <div className="relative rounded-lg bg-gray-400 w-48 h-[2px] overflow-hidden">
         <div className='w-1/3 h-full absolute bg-blue-600 rounded-lg top-0 left-0 animate-move'></div>
       </div>
     </div>

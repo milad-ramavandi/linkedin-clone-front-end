@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
-import { currentUser } from "@clerk/nextjs/server";
+
 import Login from "@/components/login";
+import { auth } from "@/auth";
 
 export const metadata: Metadata = {
   title: "Linkedin Clone",
@@ -14,12 +15,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await currentUser();
+  const session = await auth()
   return (
     <html lang="en">
       <body>
         <Providers>
-          {!user ? <Login /> : <>{children}</>}
+          {!session ? <Login/> : children}
         </Providers>
       </body>
     </html>

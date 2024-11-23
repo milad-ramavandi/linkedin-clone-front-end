@@ -5,14 +5,14 @@ import React from "react";
 
 const NotificationIcon = () => {
   return (
-    <Badge content={'99+'} color={'danger'} size={'sm'}>
+    <Badge content={'9+'} color={'danger'} size={'sm'}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         strokeWidth={1.5}
         stroke="currentColor"
-        className="size-6"
+        className="size-6 hover:animate-spin"
       >
         <path
           strokeLinecap="round"

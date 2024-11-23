@@ -6,10 +6,12 @@ import React from "react";
 import EllipsisVertical from "../ellipsis-vertical";
 import Image from "next/image";
 import PostOptions from "../post-options";
-import { useUser } from "@clerk/nextjs";
+import { useSession } from "next-auth/react";
+// import { useUser } from "@clerk/nextjs";
 
 const PostFeed = (props: Post) => {
-  const user = useUser();
+  // const user = useUser();
+  const session = useSession()
   return (
     <div className="bg-white rounded-md border p-4 space-y-3">
       <div
@@ -31,7 +33,7 @@ const PostFeed = (props: Post) => {
           </Button>
         )}
 
-        {user.user?.id === props.user.userId && <EllipsisVertical {...props} />}
+        {session.data?.user?.name === props.user.fullName && <EllipsisVertical {...props} />}
       </div>
 
       <div className="flex items-center space-x-2">

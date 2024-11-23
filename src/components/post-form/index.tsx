@@ -1,5 +1,5 @@
 "use client";
-import { useUser } from "@clerk/nextjs";
+// import { useUser } from "@clerk/nextjs";
 import { Avatar, Button, Input } from "@nextui-org/react";
 import React, {
   ChangeEventHandler,
@@ -16,9 +16,11 @@ import { useMutation, useQueryClient } from "react-query";
 import { User } from "@/types/user";
 import { Post } from "@/types/post";
 import { v4 as uuidv4 } from "uuid";
+import { useSession } from "next-auth/react";
 
 const PostForm = () => {
-  const { user } = useUser();
+  // const { user } = useUser();
+  const session = useSession();
   const fileRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<any>(null);
   const [text, setText] = useState<string>("");
@@ -30,9 +32,9 @@ const PostForm = () => {
     mutationFn: () => {
       const promise = async () => {
         const userDB: User = {
-          userId: user?.id as string,
-          userImage: user?.imageUrl as string,
-          fullName: user?.fullName as string,
+          userId: uuidv4(),
+          userImage: session.data?.user?.image as string,
+          fullName: session.data?.user?.name as string,
         };
         const body: Post = {
           id: uuidv4(),
@@ -98,7 +100,7 @@ const PostForm = () => {
     <div className="p-3 bg-white rounded-lg space-y-3">
       <form>
         <div className={"flex items-center space-x-2"}>
-          <Avatar src={user?.imageUrl} showFallback />
+          <Avatar src={session.data?.user?.image as string} showFallback />
           <Input
             type="text"
             name="text"

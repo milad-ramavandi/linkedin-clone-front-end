@@ -37,7 +37,7 @@ const EllipsisVertical = (props: Post) => {
     mutationKey: ["delete-post"],
     mutationFn: () => {
       const promise = async () => {
-        await fetch(`http://localhost:8000/posts/${props.id}`, {
+        await fetch(`${process.env.AUTH_NEXT_URL}posts/${props.id}`, {
           method: "DELETE",
         });
       };
@@ -54,7 +54,7 @@ const EllipsisVertical = (props: Post) => {
     mutationKey: ["edit-post"],
     mutationFn: () => {
       const promise = async () => {
-        await fetch(`http://localhost:8000/posts/${props.id}`, {
+        await fetch(`${process.env.AUTH_NEXT_URL}posts/${props.id}`, {
           method: "PUT",
           body: JSON.stringify({
             ...props,

@@ -26,7 +26,7 @@ const Contact = ({ contact }: { contact: IContact }) => {
         const newFollowers = !followed
           ? [...followers, session.data?.user?.name]
           : followers.filter((item) => item !== session.data?.user?.name);
-        await fetch(`http://localhost:8000/contacts/${contact.id}`, {
+        await fetch(`${process.env.AUTH_NEXT_URL}contacts/${contact.id}`, {
           method: "PUT",
           body: JSON.stringify({ ...contact, followers: newFollowers }),
           headers: {

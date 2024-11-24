@@ -22,7 +22,7 @@ const ButtonLike = ({ post }: { post: Post }) => {
         const newLikes = !isLiked
           ? [...likes, session.data?.user?.name]
           : likes.filter((item) => item !== session.data?.user?.name);
-        await fetch(`http://localhost:8000/posts/${post.id}`, {
+        await fetch(`${process.env.AUTH_NEXT_URL}posts/${post.id}`, {
           method: "PUT",
           body: JSON.stringify({
             ...post,

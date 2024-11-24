@@ -9,7 +9,7 @@ import { useQuery } from "react-query";
 const SidebarRight = () => {
   const {data} = useQuery({
     queryKey:'contacts',
-    queryFn: async () => await fetch(`http://localhost:8000/contacts`).then(res => res.json())
+    queryFn: async () => await fetch(`${process.env.AUTH_NEXT_URL}contacts`).then(res => res.json())
   })
   return (
     <div className="p-3 bg-white rounded-lg space-y-4">

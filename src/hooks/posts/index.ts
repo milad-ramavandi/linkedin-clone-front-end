@@ -5,7 +5,7 @@ import { useQuery } from 'react-query'
 const useGetPosts = () => {
   return useQuery({
     queryKey:['posts'],
-    queryFn: async () => await fetch(`http://localhost:8000/posts`).then(res => res.json())
+    queryFn: async () => await fetch(`${process.env.AUTH_NEXT_URL}posts`).then(res => res.json())
   })
 }
 

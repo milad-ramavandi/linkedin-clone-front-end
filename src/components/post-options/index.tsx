@@ -6,41 +6,23 @@ import ShareIcon from "../share-icon";
 import CommentIcon from "../comment-icon";
 import CommentForm from "../comment-form";
 import CommentsFeed from "../comments-feed";
-import ShareOptions from "../share-options";
 import ButtonLike from "../button-like";
-import ButtonRepost from "../button-repost";
+import ArrowPath from "../arrow-path";
+import { Comment } from "@/types/comment";
 
 const PostOptions = ({ post }: { post: Post }) => {
   const [isCommentOpen, setIsCommentOpen] = useState<boolean>(false);
-  const [isShareOpen, setIsShareOpen] = useState<boolean>(false);
-
-  const handleBoxCommentClick: MouseEventHandler = () =>
+  const handleBoxCommentClick: MouseEventHandler = () => {
     setIsCommentOpen((prev) => !prev);
-
-  const handleShareOptionsClick: MouseEventHandler = () =>
-    setIsShareOpen((prev) => !prev);
-
+  };
   return (
     <div>
-      <div className="flex justify-between mb-1">
-        <div>
-          {post.likes && post.likes.length > 0 && (
-            <p className="text-xs cursor-pointer text-gray-500 hover:underline">
-              {post.likes.length} Likes
-            </p>
-          )}
-        </div>
-        <div>
-          {post.comments && post.comments.length > 0 && (
-            <p
-              className="text-xs cursor-pointer text-gray-500 hover:underline"
-            >
-              {post.comments.length} comments
-            </p>
-          )}
-        </div>
+      <div className={`flex ${post?.likes && post?.likes?.length > 0 ? "justify-between" : "justify-end" } mb-1`}>
+        { post?.likes && post?.likes?.length > 0 ? <div className="text-xs text-gray-500 hover:underline">{post?.likes?.length} Likes</div> : null}
+        { post?.comments && post?.comments?.length > 0 ? <div className="text-xs text-gray-500 hover:underline">{post?.comments?.length} Comments</div> : null}
+
       </div>
-      <div className="grid gap-2 lg:grid-cols-2 xl:grid-cols-4 border-t pt-1">
+      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4 border-t pt-1">
         <ButtonLike post={post} />
         <Button
           type="button"
@@ -51,27 +33,18 @@ const PostOptions = ({ post }: { post: Post }) => {
           Comment
         </Button>
 
-        <ButtonRepost post={post} />
-        <Button
-          type="button"
-          startContent={<ShareIcon isShareOpen={isShareOpen} />}
-          variant={"ghost"}
-          onClick={handleShareOptionsClick}
-        >
+        <Button type="button" startContent={<ArrowPath />} variant={"ghost"}>
+          Repost
+        </Button>
+        <Button type="button" startContent={<ShareIcon />} variant={"ghost"}>
           Send
         </Button>
       </div>
       {isCommentOpen && (
         <div className={"space-y-4 mt-4"}>
-          <CommentForm post={post} />
-          <CommentsFeed post={post} />
+          <CommentForm postID={post?._id as string} />
+          {post?.comments && post?.comments?.length > 0 && <CommentsFeed comments={post?.comments as Comment[]} />}
         </div>
-      )}
-      {isShareOpen && (
-        <>
-          <hr className="mt-4 animate-increaseWidth" />
-          <ShareOptions />
-        </>
       )}
     </div>
   );

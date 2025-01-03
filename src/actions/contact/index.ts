@@ -1,26 +1,36 @@
-// "use server";
+"use server";
 
-// import { IContact } from "@/types/contact";
-// import { currentUser } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 
-// export const handleFollowOrUnfollowAction = async (
-//   contact: IContact,
-//   followed: boolean
-// ) => {
-//   try {
-//     const user = await currentUser();
-//     const followers = contact.followers === undefined ? [] : contact.followers;
-//     const newFollowers = !followed
-//       ? [...followers, user?.id]
-//       : followers.filter((item) => item !== user?.id);
-//     await fetch(`http://localhost:8000/contacts/${contact.id}`, {
-//       method: "PUT",
-//       body: JSON.stringify({ ...contact, followers: newFollowers }),
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//     });
-//   } catch (error) {
-//     console.log(`Server error: ${error}`);
-//   }
-// };
+
+export const getAllContacts = async () => {
+  try {
+    const res = await fetch(`${process.env.DATABASE_URL}contacts`)
+    const data = await res.json()
+    return data
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+export const handleFollowOrUnfollowAction = async (
+  userID:string,
+  contactID:string
+) => {
+  try {
+    const res = await fetch(`${process.env.DATABASE_URL}contacts?` + new URLSearchParams({"contactID":contactID}), {
+      method: "PUT",
+      body: JSON.stringify({userID}),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await res.json();
+    revalidatePath("/");
+    return data
+  } catch (error) {
+    console.log(`Server error: ${error}`);
+  }
+  
+};

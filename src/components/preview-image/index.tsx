@@ -1,17 +1,17 @@
 'use client'
 import { Button } from "@nextui-org/react";
 import Image from "next/image";
-import React, { MouseEventHandler } from "react";
+import React from "react";
 import ImageIcon from "../image-icon";
 import XMarkIcon from "../x-mark-icon";
 
-const PreviewImage = ({ file ,  handleOpenFileClick, handlePreviewClick}: { file: any, handleOpenFileClick:MouseEventHandler, handlePreviewClick:MouseEventHandler }) => {
+const PreviewImage = ({ preview ,  handleOpenFileClick, handlePreviewClick}: { preview: string , handleOpenFileClick:() => void, handlePreviewClick: () => void }) => {
   return (
     <div className="space-y-2">
-      {file && (
+      {preview && (
         <div className="relative w-full h-[300px] sm:h-[400px]">
           <Image
-            src={file}
+            src={preview}
             alt="preview"
             fill
             className={"object-contain object-center sm:object-top"}
@@ -22,17 +22,17 @@ const PreviewImage = ({ file ,  handleOpenFileClick, handlePreviewClick}: { file
         <Button
           type="button"
           onClick={handleOpenFileClick}
-          color={file ? "warning" : "primary"}
+          color={preview ? "warning" : "primary"}
           startContent={<ImageIcon />}
         >
-          {file ? "Change" : "Add"} image
+          {preview ? "Change" : "Add"} image
         </Button>
-        {file && (
+        {preview && (
           <Button
             type={"button"}
             color={"danger"}
             onClick={handlePreviewClick}
-            startContent={<XMarkIcon />}
+            startContent={<XMarkIcon className="hidden sm:block"/>}
           >
             Remove image
           </Button>

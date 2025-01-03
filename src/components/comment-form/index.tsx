@@ -1,58 +1,18 @@
 "use client";
-import { Post } from "@/types/post";
 import { Avatar, Button, Input } from "@nextui-org/react";
-import React, { MouseEventHandler, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
-import FaceIcon from "../face-smile";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
-import { MouseDownEvent } from "emoji-picker-react/dist/config/config";
-import { useMutation, useQueryClient } from "react-query";
-import { v4 as uuidv4 } from "uuid";
-import { Comment } from "@/types/comment";
 import { useSession } from "next-auth/react";
+import { addCommentAction } from "@/actions/comment";
+import FaceChevronIcon from "../face-chevron-icon";
 
-const CommentForm = ({ post }: { post: Post }) => {
+const CommentForm = ({ postID }: { postID: string }) => {
   const [textComment, setTextComment] = useState<string>("");
   const [isOpenEmoji, setIsOpenEmoji] = useState<boolean>(false);
-  const session = useSession()
-  const queryClient = useQueryClient();
-  const { mutate } = useMutation({
-    mutationKey: ["add-comment"],
-    mutationFn: () => {
-      const promise = async () => {
-        const commentDB: Comment = {
-          id: uuidv4(),
-          user: {
-            userId: uuidv4(),
-            userImage: session.data?.user?.image as string,
-            fullName: session.data?.user?.name as string,
-          },
-          text: textComment,
-          createdAt: new Date(),
-        };
-        await fetch(`${process.env.AUTH_NEXT_URL}posts/${post.id}`, {
-          method: "PUT",
-          body: JSON.stringify({
-            ...post,
-            comments:
-              post.comments === undefined
-                ? [commentDB]
-                : [...post.comments, commentDB],
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-      };
-      return toast.promise(promise, {
-        pending: "Add comment is pending...",
-        success: "Add comment successfully",
-        error: "Failed to add comment",
-      });
-    },
-    onSuccess : () => queryClient.invalidateQueries('posts')
-  });
-  const handleCommentForm: MouseEventHandler = async (
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const session = useSession();
+  const handleCommentForm : (e:React.MouseEvent<Element, MouseEvent>) => Promise<void> = async (
     e: React.MouseEvent<Element, MouseEvent>
   ) => {
     e.preventDefault();
@@ -60,42 +20,73 @@ const CommentForm = ({ post }: { post: Post }) => {
       toast.error("Comment input is required");
       return;
     }
-
-    mutate();
+    setIsLoading(true)
+    const { status, message } = await addCommentAction(
+      {
+        userId: session?.data?.user?.email as string,
+        userImage: session?.data?.user?.image as string,
+        userName: session?.data?.user?.name as string,
+      },
+      postID,
+      textComment
+    );
+    if (status === 201) {
+      toast.success(message)
+    } else {
+      toast.error(message)
+    }
+    setIsLoading(false);
     setTextComment("");
     setIsOpenEmoji(false);
   };
-  const handleOpenEmojiClick: MouseEventHandler = () =>
+  const handleOpenEmojiClick: () => void = () =>
     setIsOpenEmoji((prev) => !prev);
-  const handleEmojiClick: MouseDownEvent = (emoji: EmojiClickData) => {
+  const handleEmojiClick: (emoji:EmojiClickData) => void = (emoji: EmojiClickData) => {
     setTextComment((prev) => `${prev}${emoji.emoji}`);
   };
   return (
     <>
       <div className="flex space-x-2">
-        <Avatar src={session.data?.user?.image as string} showFallback />
-        <form className="flex-grow">
-          <Input
-            value={textComment}
-            onValueChange={setTextComment}
-            placeholder="Add a comment..."
-            endContent={<FaceIcon onClick={handleOpenEmojiClick} />}
-          />
-          <Button type="submit" className="hidden" onClick={handleCommentForm}>
-            Submit
-          </Button>
+        <Avatar
+          src={session.data?.user?.image as string}
+          showFallback
+          className="hidden sm:block"
+          isBordered
+        />
+        <form className="space-y-2 sm:space-y-0 sm:flex flex-grow space-x-2">
+          <div className="relative flex-grow">
+            <Input
+              value={textComment}
+              onValueChange={setTextComment}
+              placeholder="Add a comment..."
+              endContent={<FaceChevronIcon isToggleChevron={isOpenEmoji} onClick={handleOpenEmojiClick} />}
+            />
+            <div className={"w-full absolute left-0 top-full z-50"}>
+              <EmojiPicker
+                open={isOpenEmoji}
+                style={{
+                  width: "100%",
+                  marginTop: "5px",
+                }}
+                onEmojiClick={handleEmojiClick}
+                searchDisabled
+              />
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button
+              type="submit"
+              onClick={handleCommentForm}
+              color={"primary"}
+              variant={"ghost"}
+              isLoading={isLoading}
+              isDisabled={isLoading}
+            >
+              Submit
+            </Button>
+          </div>
         </form>
       </div>
-      <EmojiPicker
-        open={isOpenEmoji}
-        style={{
-          width: "75%",
-          height: "300px",
-          margin: "10px auto",
-          backgroundColor: "#f1f5f9",
-        }}
-        onEmojiClick={handleEmojiClick}
-      />
     </>
   );
 };

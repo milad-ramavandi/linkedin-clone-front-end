@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-const ChevronDown = () => {
+const ChevronDown = ({isOpenDropdown, isOpenEmojiBox, className}:{isOpenDropdown?:boolean,isOpenEmojiBox?:boolean, className?:string}) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -9,7 +9,7 @@ const ChevronDown = () => {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className="hidden sm:block sm:size-4 sm:stroke-gray-500"
+      className={`${className} stroke-gray-500 size-4 transition-all duration-200 ${isOpenDropdown || isOpenEmojiBox ? " rotate-180" : "rotate-0"}`}
     >
       <path
         strokeLinecap="round"

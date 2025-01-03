@@ -2,54 +2,48 @@
 import { Post } from "@/types/post";
 import { Button } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
-import React, { MouseEventHandler, useEffect, useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
+import React, { useEffect, useRef, useState } from "react";
 import LikeIcon from "../like-icon";
 import { toast } from "react-toastify";
+import {
+  likePostAction,
+  unlikePostAction,
+} from "@/actions/post";
 
 const ButtonLike = ({ post }: { post: Post }) => {
+  const toastID = useRef<any>(null);
   const [isLiked, setIsLiked] = useState<boolean>(false);
-  const [likes] = useState<string[]>(
-    post.likes === undefined ? [] : post.likes
-  );
   const session = useSession();
-  const queryClient = useQueryClient();
-  const { mutate } = useMutation({
-    mutationKey: [`${isLiked ? "Unlike" : "like"}-post`],
-    mutationFn: () => {
-      const promise = async () => {
-        const likes = post.likes === undefined ? [] : post.likes;
-        const newLikes = !isLiked
-          ? [...likes, session.data?.user?.name]
-          : likes.filter((item) => item !== session.data?.user?.name);
-        await fetch(`${process.env.AUTH_NEXT_URL}posts/${post.id}`, {
-          method: "PUT",
-          body: JSON.stringify({
-            ...post,
-            likes: newLikes,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-      };
-      return toast.promise(promise, {
-        pending: `${isLiked ? "unlike" : "like"} is pending...`,
-        success: `${isLiked ? "unlike" : "like"} post successfully`,
-        error: `Faild to ${isLiked ? "unlike" : "like"} post`,
-      });
-    },
-    onSuccess: () => queryClient.invalidateQueries("posts"),
-  });
+
+  const handleLikeOrUnlikePostClick: () => Promise<void> = async () => {
+    toastID.current = toast.loading(
+      `${isLiked ? "Unlike" : "Like"} post is pending...`
+    );
+
+    const { status, message } = isLiked
+      ? await unlikePostAction(session?.data?.user?.email as string, post?._id as string)
+      : await likePostAction(
+          session?.data?.user?.email as string,
+          post?._id as string
+        );
+
+    toast.update(toastID.current, {
+      render: message,
+      type: `${status === 201 || 200 ? "success" : "error"}`,
+      isLoading: false,
+      autoClose: 3000,
+      closeButton: true,
+    });
+    setIsLiked(status === 201 ? true : false);
+  };
   useEffect(() => {
-    if (likes?.includes(session.data?.user?.name as string)) {
+    const isUserLikePost = post?.likes?.some(
+      (item) => item === session?.data?.user?.email
+    );
+    if (isUserLikePost) {
       setIsLiked(true);
     }
   }, [session.data?.user]);
-  const handleLikeOrUnlikePostClick: MouseEventHandler = () => {
-    mutate()
-    setIsLiked((prev) => !prev);
-  };
   return (
     <Button
       type="button"

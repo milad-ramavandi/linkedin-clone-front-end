@@ -1,6 +1,6 @@
 
 export interface IContact {
-    id:string,
+    _id:string,
     name:string,
     src:string,
     title:string,

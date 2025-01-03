@@ -2,7 +2,7 @@
 
 import React from "react";
 
-const ShareIcon = ({ isShareOpen }: { isShareOpen: boolean }) => {
+const ShareIcon = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -10,7 +10,7 @@ const ShareIcon = ({ isShareOpen }: { isShareOpen: boolean }) => {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className={`${isShareOpen ? 'fill-black' : 'fill-none'} size-6`}
+      className={`fill-black size-6`}
     >
       <path
         strokeLinecap="round"

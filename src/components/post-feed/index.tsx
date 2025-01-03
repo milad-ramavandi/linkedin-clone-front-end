@@ -1,12 +1,12 @@
-"use client";
+"use client"
 import { Post } from "@/types/post";
 import { Avatar, Button } from "@nextui-org/react";
 import TimeAgo from "react-timeago";
 import React from "react";
-import EllipsisVertical from "../ellipsis-vertical";
 import Image from "next/image";
 import PostOptions from "../post-options";
 import { useSession } from "next-auth/react";
+import DropdownPost from "../drop-down-post";
 
 const PostFeed = (props: Post) => {
   const session = useSession()
@@ -31,14 +31,14 @@ const PostFeed = (props: Post) => {
           </Button>
         )}
 
-        {session.data?.user?.name === props.user.fullName && <EllipsisVertical {...props} />}
+        {session.data?.user?.name === props.user.userName && <DropdownPost {...props} />}
       </div>
 
       <div className="flex items-center space-x-2">
-        <Avatar src={props.user.userImage} showFallback />
+        <Avatar src={props.user.userImage} showFallback isBordered/>
         <div className="text-xs text-gray-400">
-          <p>{props.user.fullName}</p>
-          <TimeAgo date={props.createdAt} suppressHydrationWarning />
+          <p>{props.user.userName}</p>
+          <TimeAgo date={props.createdAt as Date} suppressHydrationWarning />
         </div>
       </div>
 

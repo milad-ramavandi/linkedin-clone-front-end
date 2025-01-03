@@ -1,8 +1,7 @@
 "use client";
+import React from "react";
 
-import { MouseEventHandler } from "react";
-
-const FaceIcon = ({onClick}:{onClick:MouseEventHandler}) => {
+const FaceIcon = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -10,8 +9,7 @@ const FaceIcon = ({onClick}:{onClick:MouseEventHandler}) => {
       viewBox="0 0 24 24"
       strokeWidth={1.5}
       stroke="currentColor"
-      className="size-6 cursor-pointer text-gray-500"
-      onClick={onClick}
+      className="size-6 text-gray-500"
     >
       <path
         strokeLinecap="round"

@@ -1,67 +1,25 @@
 "use client";
-// import { useUser } from "@clerk/nextjs";
 import { Avatar, Button, Input } from "@nextui-org/react";
 import React, {
-  ChangeEventHandler,
-  MouseEventHandler,
   useRef,
   useState,
 } from "react";
 import PreviewImage from "../preview-image";
 import { toast } from "react-toastify";
-import FaceIcon from "../face-smile";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
-import { MouseDownEvent } from "emoji-picker-react/dist/config/config";
-import { useMutation, useQueryClient } from "react-query";
-import { User } from "@/types/user";
-import { Post } from "@/types/post";
-import { v4 as uuidv4 } from "uuid";
 import { useSession } from "next-auth/react";
+import { addPostAction } from "@/actions/post";
+import FaceChevronIcon from "../face-chevron-icon";
 
 const PostForm = () => {
-  // const { user } = useUser();
   const session = useSession();
   const fileRef = useRef<HTMLInputElement>(null);
-  const [file, setFile] = useState<any>(null);
+  const [preview, setPreview] = useState<string>("");
   const [text, setText] = useState<string>("");
   const [isOpenEmoji, setIsOpenEmoji] = useState<boolean>(false);
-  const queryClient = useQueryClient();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { mutate } = useMutation({
-    mutationKey: ["add-post"],
-    mutationFn: () => {
-      const promise = async () => {
-        const userDB: User = {
-          userId: uuidv4(),
-          userImage: session.data?.user?.image as string,
-          fullName: session.data?.user?.name as string,
-        };
-        const body: Post = {
-          id: uuidv4(),
-          user: userDB,
-          text: text,
-          postImage: file && file,
-          createdAt: new Date(),
-        };
-        await fetch(`${process.env.AUTH_NEXT_URL}posts`, {
-          method: "POST",
-          body: JSON.stringify(body),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-      };
-
-      return toast.promise(promise, {
-        pending: "Add post pending...",
-        success: "Add post successfully",
-        error: "Failed to add post",
-      });
-    },
-    onSuccess: () => queryClient.invalidateQueries("posts"),
-  });
-
-  const handleImageChange: ChangeEventHandler = (
+  const handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const reader = new FileReader();
@@ -69,16 +27,16 @@ const PostForm = () => {
       reader.readAsDataURL(e.target.files?.[0]);
     }
     reader.onload = (readerEvent: ProgressEvent<FileReader>) => {
-      setFile(readerEvent.target?.result);
+      setPreview(readerEvent.target?.result as string);
     };
   };
-  const handleOpenFileClick: MouseEventHandler = () => fileRef.current?.click();
+  const handleOpenFileClick: () => void = () => fileRef.current?.click();
 
-  const handlePreviewClick: MouseEventHandler = () => {
-    setFile(null);
+  const handlePreviewClick:() => void = () => {
+    setPreview("");
   };
 
-  const handlePostForm: MouseEventHandler = async (
+  const handlePostForm:(e: React.MouseEvent<Element, MouseEvent>) => Promise<void> = async (
     e: React.MouseEvent<Element, MouseEvent>
   ) => {
     e.preventDefault();
@@ -86,30 +44,58 @@ const PostForm = () => {
       toast.error("Post input is required");
       return;
     }
-    mutate();
-    setFile(null);
+    setIsLoading(true);
+    const { status, message } = await addPostAction(text, preview, {
+      userId: session?.data?.user?.email as string,
+      userImage: session?.data?.user?.image as string,
+      userName: session?.data?.user?.name as string,
+    });
+    if (status === 201) {
+      toast.success(message);
+    } else {
+      toast.error(message);
+    }
+    setIsLoading(false);
+    setPreview("");
     setText("");
     setIsOpenEmoji(false);
   };
-  const handleOpenEmojiClick: MouseEventHandler = () =>
+  const handleOpenEmojiClick:() => void = () =>
     setIsOpenEmoji((prev) => !prev);
-  const handleEmojiClick: MouseDownEvent = (emoji: EmojiClickData) => {
+  const handleEmojiClick: (emoji: EmojiClickData) => void = (emoji: EmojiClickData) => {
     setText((prev) => `${prev}${emoji.emoji}`);
   };
   return (
     <div className="p-3 bg-white rounded-lg space-y-3">
-      <form>
-        <div className={"flex items-center space-x-2"}>
-          <Avatar src={session.data?.user?.image as string} showFallback />
-          <Input
-            type="text"
-            name="text"
-            value={text}
-            onValueChange={setText}
-            placeholder="Start writing a post..."
-            autoComplete={"off"}
-            endContent={<FaceIcon onClick={handleOpenEmojiClick} />}
+      <form className="space-y-2 sm:flex sm:space-x-2 sm:space-y-0">
+        <div className={"flex flex-grow items-center space-x-2"}>
+          <Avatar
+            src={session.data?.user?.image as string}
+            showFallback
+            className="hidden sm:block"
+            isBordered
           />
+          <div className="relative flex-grow">
+            <Input
+              type="text"
+              name="text"
+              value={text}
+              onValueChange={setText}
+              placeholder="Start writing a post..."
+              autoComplete={"off"}
+              endContent={<FaceChevronIcon isToggleChevron={isOpenEmoji} onClick={handleOpenEmojiClick} />}
+            />
+            <div className="w-full absolute top-full left-0 z-50">
+              <EmojiPicker
+                open={isOpenEmoji}
+                style={{
+                  width: "100%",
+                  marginTop: "5px",
+                }}
+                onEmojiClick={handleEmojiClick}
+              />
+            </div>
+          </div>
           <input
             type="file"
             name="file"
@@ -118,23 +104,22 @@ const PostForm = () => {
             onChange={handleImageChange}
           />
         </div>
-        <div className="hidden">
-          <Button type="submit" onClick={handlePostForm}>
+
+        <div className="flex justify-end">
+          <Button
+            type="submit"
+            onClick={handlePostForm}
+            color={"primary"}
+            variant={"ghost"}
+            isLoading={isLoading}
+            isDisabled={isLoading}
+          >
             Submit
           </Button>
         </div>
       </form>
-      <EmojiPicker
-        open={isOpenEmoji}
-        style={{
-          width: "75%",
-          margin: "10px auto",
-          backgroundColor: "#f1f5f9",
-        }}
-        onEmojiClick={handleEmojiClick}
-      />
       <PreviewImage
-        file={file}
+        preview={preview}
         handleOpenFileClick={handleOpenFileClick}
         handlePreviewClick={handlePreviewClick}
       />

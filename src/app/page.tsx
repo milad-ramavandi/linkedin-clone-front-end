@@ -7,7 +7,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default async function Home() {
-  await delay(4000);
+  await delay(3000);
   return (
     <>
       <Header />
@@ -15,15 +15,19 @@ export default async function Home() {
         <div className={"hidden md:block md:col-span-2"}>
           <UserInformation />
         </div>
-        <div className={"col-span-full md:col-span-6 lg:col-span-4 space-y-4 h-screen overflow-auto scrollbar-hide pb-44"}>
+        <div
+          className={
+            "col-span-full md:col-span-6 lg:col-span-4 space-y-4 h-screen overflow-auto scrollbar-hide pb-44"
+          }
+        >
           <PostForm />
           <PostsFeed />
         </div>
         <div className={"hidden lg:block lg:col-span-2"}>
           <SidebarRight />
         </div>
-        <ToastContainer position={"bottom-left"} />
       </div>
+      <ToastContainer position={"bottom-left"} autoClose={3000} />
     </>
   );
 }

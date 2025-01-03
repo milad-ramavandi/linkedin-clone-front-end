@@ -8,7 +8,7 @@
         @apply flex flex-col items-center justify-center text-sm font-light
     }
     .icon svg {
-        @apply fill-white stroke-gray-300
+        @apply fill-gray-800 sm:fill-white sm:stroke-gray-300
     }
     .icon p {
         @apply hidden sm:block sm:text-gray-400 sm:text-xs 

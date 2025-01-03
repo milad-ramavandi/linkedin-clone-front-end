@@ -1,14 +1,18 @@
-'use client'
-import { Post } from '@/types/post'
-import React from 'react'
-import CommentFeed from '../comment-feed'
+"use client";
+import CommentFeed from "../comment-feed";
+import { Comment } from "@/types/comment";
 
-const CommentsFeed = ({post}: {post:Post}) => {
-  return (
-    <div className={'space-y-2 h-52 overflow-auto scrollbar-hide'}>
-      {post.comments?.slice(0).reverse().map(item => <CommentFeed key={item.id} {...item}/>)}
-    </div>
-  )
-}
+const CommentsFeed = ({ comments }: { comments:Comment[] }) => {
+    return (
+      <div className={"space-y-2 h-52 overflow-auto scrollbar-hide"}>
+        {comments
+          ?.slice(0)
+          .reverse()
+          .map((item: Comment) => (
+            <CommentFeed key={item.id} {...item} />
+          ))}
+      </div>
+    );
+};
 
-export default CommentsFeed
+export default CommentsFeed;

@@ -1,16 +1,15 @@
-import { Comment } from "../comment";
+import { Comment } from "../comment";   
 import { User } from "../user";
 
 export interface Post {
-  id:string
+  _id?:string
   user: User;
   text: string;
   postImage?: any;
-  comments?: Comment[];
-  likes?: string[];
-  createdAt: Date;
-  isEdited?: boolean;
-  reposts?:string[]
+  createdAt?: Date;
+  isEdited?:boolean;
+  comments?:Comment[];
+  likes?:string[]
 }
 
 

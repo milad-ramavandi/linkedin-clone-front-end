@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   env:{
-    AUTH_NEXT_URL:process.env.AUTH_NEXT_URL
+    DATABASE_URL:process.env.DATABASE_URL
   }
 };
 

@@ -1,22 +1,29 @@
-'use client'
-import { Button } from "@nextui-org/react";
-import Image from "next/image";
+"use client";
+import { Button, Card, Image } from "@nextui-org/react";
 import React from "react";
 import ImageIcon from "../icons/image-icon";
 import XMarkIcon from "../icons/x-mark-icon";
 
-const PreviewImage = ({ preview ,  handleOpenFileClick, handlePreviewClick}: { preview: string , handleOpenFileClick:() => void, handlePreviewClick: () => void }) => {
+const PreviewImage = ({
+  preview,
+  handleOpenFileClick,
+  handlePreviewClick,
+}: {
+  preview: string;
+  handleOpenFileClick: () => void;
+  handlePreviewClick: () => void;
+}) => {
   return (
     <div className="space-y-2">
       {preview && (
-        <div className="relative w-full h-[300px] sm:h-[400px]">
+        <Card className="sm:w-3/4 mx-auto h-[300px] sm:h-[400px]">
           <Image
+            removeWrapper
+            className="w-full h-full object-cover"
             src={preview}
             alt="preview"
-            fill
-            className={"object-contain object-center sm:object-top"}
           />
-        </div>
+        </Card>
       )}
       <div className={"flex justify-end space-x-2"}>
         <Button
@@ -32,7 +39,7 @@ const PreviewImage = ({ preview ,  handleOpenFileClick, handlePreviewClick}: { p
             type={"button"}
             color={"danger"}
             onClick={handlePreviewClick}
-            startContent={<XMarkIcon className="hidden sm:block"/>}
+            startContent={<XMarkIcon className="hidden sm:block" />}
           >
             Remove image
           </Button>

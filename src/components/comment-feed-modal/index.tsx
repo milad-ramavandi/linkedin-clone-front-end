@@ -2,7 +2,6 @@
 
 import {
   addReactionCommentAction,
-  deleteCommentAction,
   deleteReactionCommentAction,
   editCommentAction,
   editReactionCommentAction,
@@ -23,11 +22,8 @@ import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import TimeAgo from "react-timeago";
-import DeleteIcon from "../icons/delete-icon";
 import { toast } from "react-toastify";
-import EditIcon from "../icons/edit-icon";
 import FaceChevronIcon from "../icons/face-chevron-icon";
-import AvatarGroupReactions from "../avatar-group-reactions";
 import XMarkIcon from "../icons/x-mark-icon";
 
 const CommentFeedModal = ({
@@ -43,12 +39,11 @@ const CommentFeedModal = ({
 }) => {
   const [isReaction, setIsReaction] = useState<boolean>(false);
   const [codeReactedUser, setCodeReactedUser] = useState<string>("");
-  const [isShowTextArea, setIsShowTextArea] = useState<boolean>(false);
+
   const [isOpenBoxEmoji, setIsOpenBoxEmoji] = useState<boolean>(false);
   const session = useSession();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isLoadingDeleteButton, setIsLoadingDeleteButton] =
-    useState<boolean>(false);
+
   const [isLoadingEditButton, setIsLoadingEditButton] =
     useState<boolean>(false);
   const [text, setText] = useState<string>(comment?.text);
@@ -93,24 +88,7 @@ const CommentFeedModal = ({
       setIsLoading(false);
     }
   };
-  const deleteComment: () => Promise<void> = async () => {
-    setIsLoadingDeleteButton(true);
-    const { status, message } = await deleteCommentAction(
-      comment?.id as string,
-      comment.postID
-    );
-    if (status === 200) {
-      toast.success(message);
-      onClose();
-    } else {
-      toast.error(message);
-      onClose();
-    }
-    setIsLoadingDeleteButton(false);
-  };
-  const showTextarea: () => void = () => {
-    setIsShowTextArea(true);
-  };
+
   const handleShowBoxEmoji: () => void = () => {
     setIsOpenBoxEmoji((prev) => !prev);
   };
@@ -129,13 +107,13 @@ const CommentFeedModal = ({
       onClose();
     }
     setIsLoadingEditButton(false);
-    setIsShowTextArea(false);
   };
   const addEmojiToText: (e: EmojiClickData) => void = (e: EmojiClickData) =>
     setText((prev) => `${prev}${e.emoji}`);
-
-  const hideTextarea: () => void = () => setIsShowTextArea(false);
-
+  const closeModal: () => void = () => {
+    setText(comment?.text)
+    onClose();
+  }
   useEffect(() => {
     comment?.reactions?.map((item: IReaction) => {
       if (item.userID === session?.data?.user?.email) {
@@ -173,29 +151,7 @@ const CommentFeedModal = ({
             </div>
           )}
           <div className="w-full flex items-center space-x-2 justify-end">
-            {session?.data?.user?.email === comment?.user?.userId && (
-              <>
-                <Button
-                  color={"danger"}
-                  isIconOnly
-                  size="lg"
-                  onClick={deleteComment}
-                  isLoading={isLoadingDeleteButton}
-                  isDisabled={isLoadingDeleteButton}
-                >
-                  <DeleteIcon className="size-7" />
-                </Button>
-                <Button
-                  isIconOnly
-                  size="lg"
-                  color={"warning"}
-                  onClick={showTextarea}
-                >
-                  <EditIcon className="size-6" />
-                </Button>
-              </>
-            )}
-            <Button isIconOnly size="lg" onClick={onClose}>
+            <Button isIconOnly size="lg" onClick={closeModal}>
               <XMarkIcon />
             </Button>
           </div>
@@ -228,57 +184,43 @@ const CommentFeedModal = ({
               {comment?.user?.userName}
             </p>
 
-            {isShowTextArea ? (
-              <div className={"relative space-y-2"}>
-                <Textarea
-                  value={text}
-                  onValueChange={setText}
-                  variant={"bordered"}
-                  color={"primary"}
-                  endContent={
-                    <FaceChevronIcon
-                      isToggleChevron={isOpenBoxEmoji}
-                      onClick={handleShowBoxEmoji}
-                    />
-                  }
-                />
-                <div className="flex justify-end space-x-2">
-                  <Button color="danger" variant="light" onClick={hideTextarea}>
-                    Cancel
-                  </Button>
-                  <Button
-                    color={"primary"}
-                    variant={"ghost"}
-                    onClick={editComment}
-                    isDisabled={
-                      text === "" ||
-                      text === comment.text ||
-                      isLoadingEditButton
-                    }
-                    isLoading={isLoadingEditButton}
-                  >
-                    Edit
-                  </Button>
-                </div>
-                <div className={"w-full absolute top-7 left-0 z-50"}>
-                  <EmojiPicker
-                    open={isOpenBoxEmoji}
-                    searchDisabled
-                    onEmojiClick={addEmojiToText}
-                    style={{
-                      width: "100%",
-                    }}
+            <div className={"relative space-y-2"}>
+              <Textarea
+                value={text}
+                onValueChange={setText}
+                variant={"bordered"}
+                color={"primary"}
+                endContent={
+                  <FaceChevronIcon
+                    isToggleChevron={isOpenBoxEmoji}
+                    onClick={handleShowBoxEmoji}
                   />
-                </div>
-              </div>
-            ) : (
-              <p>{comment?.text}</p>
-            )}
-            {!isShowTextArea && (
-              <AvatarGroupReactions
-                reactions={comment?.reactions as IReaction[]}
+                }
               />
-            )}
+              <div className="flex justify-end space-x-2">
+                <Button
+                  color={"primary"}
+                  variant={"ghost"}
+                  onClick={editComment}
+                  isDisabled={
+                    text === "" || text === comment.text || isLoadingEditButton
+                  }
+                  isLoading={isLoadingEditButton}
+                >
+                  Edit
+                </Button>
+              </div>
+              <div className={"w-full absolute top-7 left-0 z-50"}>
+                <EmojiPicker
+                  open={isOpenBoxEmoji}
+                  searchDisabled
+                  onEmojiClick={addEmojiToText}
+                  style={{
+                    width: "100%",
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </ModalBody>
       </ModalContent>

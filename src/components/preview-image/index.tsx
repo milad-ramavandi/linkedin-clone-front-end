@@ -2,8 +2,8 @@
 import { Button } from "@nextui-org/react";
 import Image from "next/image";
 import React from "react";
-import ImageIcon from "../image-icon";
-import XMarkIcon from "../x-mark-icon";
+import ImageIcon from "../icons/image-icon";
+import XMarkIcon from "../icons/x-mark-icon";
 
 const PreviewImage = ({ preview ,  handleOpenFileClick, handlePreviewClick}: { preview: string , handleOpenFileClick:() => void, handlePreviewClick: () => void }) => {
   return (

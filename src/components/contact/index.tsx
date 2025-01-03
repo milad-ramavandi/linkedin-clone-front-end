@@ -2,8 +2,8 @@
 import { IContact } from "@/types/contact";
 import { Avatar, Button, Spinner } from "@nextui-org/react";
 import React, {useEffect, useState } from "react";
-import CheckIcon from "../check-icon";
-import PlusIcon from "../plus-icon";
+import CheckIcon from "../icons/check-icon";
+import PlusIcon from "../icons/plus-icon";
 import { useSession } from "next-auth/react";
 import { handleFollowOrUnfollowAction } from "@/actions/contact";
 

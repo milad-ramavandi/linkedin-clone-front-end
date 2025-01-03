@@ -9,7 +9,7 @@ import {
 } from "@nextui-org/react";
 import { signOut, useSession } from "next-auth/react";
 import React, { useState } from "react";
-import ChevronDown from "../chevron-down";
+import ChevronDown from "../icons/chevron-down";
 
 const UserProfile = () => {
   const session = useSession();

@@ -9,8 +9,8 @@ import {
 import React, {
   useRef
 } from "react";
-import EditIcon from "../edit-icon";
-import DeleteIcon from "../delete-icon";
+import EditIcon from "../icons/edit-icon";
+import DeleteIcon from "../icons/delete-icon";
 import { Post } from "@/types/post";
 import { toast } from "react-toastify";
 import { deletePostAction } from "@/actions/post";

@@ -2,12 +2,12 @@
 import { Post } from "@/types/post";
 import { Button } from "@nextui-org/react";
 import React, { MouseEventHandler, useState } from "react";
-import ShareIcon from "../share-icon";
-import CommentIcon from "../comment-icon";
+import ShareIcon from "../icons/share-icon";
+import CommentIcon from "../icons/comment-icon";
 import CommentForm from "../comment-form";
 import CommentsFeed from "../comments-feed";
 import ButtonLike from "../button-like";
-import ArrowPath from "../arrow-path";
+import ArrowPath from "../icons/arrow-path";
 import { Comment } from "@/types/comment";
 
 const PostOptions = ({ post }: { post: Post }) => {

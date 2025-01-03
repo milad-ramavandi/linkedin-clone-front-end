@@ -23,12 +23,12 @@ import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useState } from "react";
 import TimeAgo from "react-timeago";
-import DeleteIcon from "../delete-icon";
+import DeleteIcon from "../icons/delete-icon";
 import { toast } from "react-toastify";
-import EditIcon from "../edit-icon";
-import FaceChevronIcon from "../face-chevron-icon";
+import EditIcon from "../icons/edit-icon";
+import FaceChevronIcon from "../icons/face-chevron-icon";
 import AvatarGroupReactions from "../avatar-group-reactions";
-import XMarkIcon from "../x-mark-icon";
+import XMarkIcon from "../icons/x-mark-icon";
 
 const CommentFeedModal = ({
   isOpen,

@@ -1,5 +1,5 @@
 import React from "react";
-import InformationIcon from "../information-icon";
+import InformationIcon from "../icons/information-icon";
 import Contact from "../contact";
 import { IContact } from "@/types/contact";
 

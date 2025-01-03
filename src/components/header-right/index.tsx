@@ -1,11 +1,11 @@
 "use  client";
 import { LinkType } from "@/types/link/link";
 import Link from "next/link";
-import HomeIcon from "../home-icon";
-import UsersIcon from "../users-icon";
-import BriefcaseIcon from "../briefcase-icon";
-import MessagesIcon from "../messages-icon";
-import NotificationIcon from "../notification-icon";
+import HomeIcon from "../icons/home-icon";
+import UsersIcon from "../icons/users-icon";
+import BriefcaseIcon from "../icons/briefcase-icon";
+import MessagesIcon from "../icons/messages-icon";
+import NotificationIcon from "../icons/notification-icon";
 import UserProfile from "../user-profile";
 import React from "react";
 
@@ -28,7 +28,7 @@ const HeaderRight = () => {
     <div className="flex space-x-2">
       <div
         className={
-          "w-[90%] !mx-auto fixed left-0 right-0 bottom-1 p-2 rounded-lg bg-gray-300 flex justify-between items-center space-x-4 sm:static sm:bg-transparent sm:p-0"
+          "w-[90%] h-[60px] !mx-auto fixed left-0 right-0 bottom-1 px-4 py-2 rounded-lg bg-gray-500 flex justify-between items-center space-x-4 sm:static sm:h-auto sm:bg-transparent sm:p-0"
         }
       >
         {links.map((item, index) => (

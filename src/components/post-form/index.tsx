@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { useSession } from "next-auth/react";
 import { addPostAction } from "@/actions/post";
-import FaceChevronIcon from "../face-chevron-icon";
+import FaceChevronIcon from "../icons/face-chevron-icon";
 
 const PostForm = () => {
   const session = useSession();

@@ -17,7 +17,7 @@ import { editPostAction } from "@/actions/post";
 import { toast } from "react-toastify";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { Post } from "@/types/post";
-import FaceChevronIcon from "../face-chevron-icon";
+import FaceChevronIcon from "../icons/face-chevron-icon";
 
 const EditPostModal = ({
   post,

@@ -3,7 +3,7 @@ import { Post } from "@/types/post";
 import { Button } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useRef, useState } from "react";
-import LikeIcon from "../like-icon";
+import LikeIcon from "../icons/like-icon";
 import { toast } from "react-toastify";
 import {
   likePostAction,

@@ -6,8 +6,7 @@ const BriefcaseIcon = () => {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      fill="currentColor"
-      className="size-6 hover:animate-spin"
+      className="size-7 sm:size-6 !fill-white hover:animate-spin"
     >
       <path
         fillRule="evenodd"
